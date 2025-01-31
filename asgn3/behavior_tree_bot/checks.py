@@ -14,3 +14,12 @@ def if_close_to_winning(state):
     enemy_ships = sum(planet.num_ships for planet in state.enemy_planets())
     my_ships = sum(planet.num_ships for planet in state.my_ships())
     return my_ships/(enemy_ships + my_ships) >= .90
+
+def if_at_beginning_of_game(state):
+    return len(state.my_planets()) <= 3
+
+def if_at_halfway_point(state):
+    enemy_and_neutral_ships = sum(planet.num_ships for planet in state.enemy_planets() + state.neutral_planets())
+    my_ships = sum(planet.num_ships for planet in state.my_planets())
+    p = my_ships/(enemy_and_neutral_ships + my_ships)
+    return .40 < p
