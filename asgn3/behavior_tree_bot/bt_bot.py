@@ -31,6 +31,11 @@ def setup_behavior_tree():
     spread_many_neutral = Action(spread_to_many_neutral_planets)
     spread_at_beg.child_nodes = [beg_of_game_check, spread_many_neutral]
 
+    # defensive_strat = Sequence(name='Defensive Strategy')
+    # losing_check = Check(if_close_to_losing)
+    # defensive_action = Action(save_my_planets)
+    # defensive_strat.child_nodes = [losing_check, defensive_action]
+
     spread_at_mid = Sequence(name='Spread At Middle')
     mid_of_game_check = Check(if_at_halfway_point)
     spread_many = Action(spread_more_aggressively)

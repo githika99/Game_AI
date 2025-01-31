@@ -120,12 +120,18 @@ def spread_to_many_neutral_planets(state):
 # At the halfway point we need to become more aggressive
 def spread_more_aggressively(state):
     # select one of my planets: pick a random planet
-    strongest_planet = random.choice(state.my_planets())
+    # strongest_planet = random.choice(state.my_planets())
+
+    strongest_planet = None
+    for planet in state.my_planets():
+        if all(fleet.source_planet != planet.ID for fleet in state.my_fleets()):
+            strongest_planet = planet
+
+    if strongest_planet is None:
+        strongest_planet = state.my_planets()[0]
+
     logging.info('\n randomly picked planet with id {strongest_planet.ID}')
 
-    if not strongest_planet:
-        return False
-    
     # select a enemy/neutral planet that is near it
     cloest_planets = sorted(state.enemy_planets() + state.neutral_planets(), key=lambda p: state.distance(strongest_planet.ID, p.ID))
     closest_planet = None
@@ -145,3 +151,31 @@ def spread_more_aggressively(state):
     # (4) Send half the ships from my strongest planet to the weakest enemy planet.
     return issue_order(state, strongest_planet.ID, closest_planet.ID, bots)
 
+# def save_my_planets(state):
+    # see all enemy fleets, and for ones that will beat my planets, save them if possible
+
+
+def send_something(state):
+    strongest_planet = max(state.my_planets(), key=lambda p: p.num_ships, default=None)
+    
+    weakest_planet = random.choice(state.enemy_planets() + state.neutral_planets())
+
+    if not strongest_planet or not weakest_planet:
+        return False
+    
+    bots = strongest_planet.num_ships/2
+    if weakest_planet.owner == 0:
+        bots_needed_from_p = weakest_planet.num_ships + 5
+    else: #it is enemy
+        bots_needed_from_p = weakest_planet.num_ships + (state.distance(strongest_planet.ID, weakest_planet.ID) * weakest_planet.growth_rate)
+
+    if strongest_planet.num_ships * 2/3 > bots_needed_from_p:
+        bots = bots_needed_from_p
+
+    return issue_order(state, strongest_planet.ID, weakest_planet.ID, bots)
+
+    
+
+
+
+# reinforce our weakest planets
